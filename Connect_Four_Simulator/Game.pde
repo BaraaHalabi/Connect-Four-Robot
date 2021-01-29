@@ -1,73 +1,51 @@
-public enum Cell {
-  Empty(0), Red(1), Yellow(2);
-  int state;
-
-  private Cell(int state) {
-    this.state = state;
-  }
-
-  int getState() {
-    return this.state;
-  }
-}
-
-public enum Turn {
-  Bot(0), Human(1);
-  int state;
-
-  private Turn(int state) {
-    this.state = state;
-  }
-
-  int getState() {
-    return this.state;
-  }
-}
-
-public enum Shape {
-  Rect(0), Eclipse(1);
-  int state;
-
-  private Shape(int state) {
-    this.state = state;
-  }
-
-  int getState() {
-    return this.state;
-  }
-}
-
 class Game {
   int board[][] = new int[6][7];
   int coinsInColumns[] = new int[7];
   int x, y, c;
-  int turn = Turn.Bot.getState();
+  int turn = Turn.Bot.getState(), gameState;
+  boolean gameIsRunning;
+  
+  
+  Button button;
 
   Game() {
     for (int i = 0; i < 6; i ++)
       for (int j = 0; j < 7; j ++)
         board[i][j] = 0;
-    for(int i = 0; i < 7; i ++)
+    for (int i = 0; i < 7; i ++)
       coinsInColumns[i] = 0;
     x = 0;
     y = 0;
     c = 50;
+    gameIsRunning = true;
+    gameState = Ai.winner(board);
   }
 
   Game(int x, int y, int c) {
     for (int i = 0; i < 6; i ++)
       for (int j = 0; j < 7; j ++)
         board[i][j] = 0;
-    for(int i = 0; i < 7; i ++)
+    for (int i = 0; i < 7; i ++)
       coinsInColumns[i] = 0;
     this.x = x;
     this.y = y;
     this.c = c;
+    gameIsRunning = true;
+    gameState = Ai.winner(board);
+  }
+
+  void run() {
+    renderGame();
+    gameState = Ai.winner(board);
+    if (gameState != 0)
+      gameIsRunning = false;
+    aiPlay();
+    renderWinnerScreen(gameState);
   }
 
   void renderGame() {
     noStroke();
-    //rectMode(CORNER);
+    rectMode(CORNER);
     ellipseMode(CORNER);
     int py = y;
     for (int i = 0; i < 6; i ++) {
@@ -87,13 +65,34 @@ class Game {
       py += c;
     }
     renderDropArea();
-    if(Ai.winner(board) != 0) {
-       println(Ai.winner(board));
-       noLoop();
-    }
-    if (turn == Turn.Bot.getState()) {
+  }
+
+  void aiPlay() {
+    if (turn == Turn.Bot.getState() && gameIsRunning) {
       game.dropCoin(Ai.decisionMaking(0, true, board, coinsInColumns), Cell.Yellow.getState());
       turn = Turn.Human.getState();
+    }
+  }
+
+  void renderWinnerScreen(int gameState) {
+    if (!gameIsRunning) {
+      filter(BLUR, 5);
+      fill(255, 128);
+      rect(0, 200, width, 200);
+      fill(0);
+      String label = ((gameState == Cell.Red.getState()) ? "Red" : "Yellow") + " Wins!";
+      textSize(24);
+      textAlign(CORNER);
+      button = new Button(350, 325, 150, 50);
+      if(gameState == Cell.Red.getState())
+        fill(225, 65, 15);
+      else
+        fill(255, 255, 0);
+      text(label, width / 2  - textWidth(label) / 2, 250);
+      button.setButtonColor(color(50, 105, 165));
+      button.setLabelColor(color(255, 255, 255));
+      button.setLabel("Reset", 24);
+      button.render();
     }
   }
 
@@ -104,14 +103,34 @@ class Game {
         break;
       }
     }
-    if(coinsInColumns[column] < 6)
+    if (coinsInColumns[column] < 6)
       coinsInColumns[column] ++;
   }
 
   void renderDropArea() {
-    if (turn == Turn.Human.getState()) {
+    if (turn == Turn.Human.getState() && gameIsRunning) {
       fill(255, 255, 255, 100);
       rect((mouseX / c) * c, 0, c, 6 * c);
+    }
+  }
+
+  void printBoard() {
+    for (int i = 0; i < 6; i ++) {
+      for (int j = 0; j < 7; j ++) {
+        print(board[i][j] + " ");
+      }
+      println();
+    }
+    println();
+    println();
+  }
+
+  void clear() {
+    for (int i = 0; i < 6; i ++) {
+      coinsInColumns[i] = 0;
+      for (int j = 0; j < 7; j ++) {
+        board[i][j] = Cell.Empty.getState();
+      }
     }
   }
 }
