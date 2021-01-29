@@ -1,47 +1,81 @@
+static int counter = 0;
+
 static class Ai {
   static int winingValue = Cell.Yellow.getState();
   static int loseValue = Cell.Red.getState();
-
-  static int decisionMaking(int depth, boolean yellowTurn, int board[][], int coinsInColumns[]) {
-    if(depth == 4) {
+  
+  
+  
+  static int decisionMaking(int depth, boolean yellowTurn, int board[][], int coinsInColumns[]) 
+  {
+   /* if(depth == 5) {
     for(int i = 0; i < 6; i ++) {
       for(int j = 0; j < 7; j ++) {
         print(board[i][j] + " "); 
       }
       println();
     }
-    }
     println();
-    println();
-    if (depth >= 5)
+    }*/
+    if (depth >= 9)
+    {
       return 0;
+    }
     int gameState = winner(board);
     if (gameState == winingValue)
+    {
+      //return 1000000000 / (int)pow(10,depth);
       return 100 / depth;
+    }
     else if (gameState == loseValue)
+    {
+      //return -1000000000 / (int)pow(10,depth);
       return -100 / depth;
+    }
     int maxPoint = -1000000, bestCol = 0, totalPoint = 0;
-    for (int i = 0; i < 7; i ++) {
-      if (board[0][i] == 0) {
+    for (int i = 0; i < 7; i ++)
+    {
+      if (board[0][i] == 0) 
+      {
+        int choice =0 ;
+        if (yellowTurn)
+        {
+           board[5 - coinsInColumns[i]][i] = loseValue;
+           if (winner(board) == loseValue)
+           {
+             choice+=200;
+           }
+           board[5 - coinsInColumns[i]][i] = 0;
+        }
+        
         if(yellowTurn)
+        {
           board[5 - coinsInColumns[i]][i] = winingValue;
+        }
         else
+        {
           board[5 - coinsInColumns[i]][i] = loseValue;
-        int choice = decisionMaking(depth + 1, !yellowTurn, board, coinsInColumns);
-        //print(choice + " ");
+        }
+        coinsInColumns[i]++;
+        choice = decisionMaking(depth + 1, !yellowTurn, board, coinsInColumns);
+        coinsInColumns[i]--;
         board[5 - coinsInColumns[i]][i] = 0;
-        if (choice >= maxPoint) {
+        totalPoint += choice;
+        if (choice >= maxPoint) 
+        {
           maxPoint = choice;
           bestCol = i;
-          totalPoint += choice;
         }
       }
     }
-    //println();
     if (depth == 0)
+    {
       return bestCol;
+    }
     else
+    {
       return totalPoint;
+    }
   }
 
   static int winner(int board[][]) {
