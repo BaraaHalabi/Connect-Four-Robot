@@ -15,31 +15,22 @@ Capture cam;
 
 void setup() {
   size(700, 600);
-  //String[] cameras = Capture.list();
-
-  //if (cameras.length == 0) {
-  //  println("There are no cameras available for capture.");
-  //  exit();
-  //} else {
-  //  println("Available cameras:");
-  //  for (int i = 0; i < cameras.length; i++) {
-  //    println(cameras[i]);
-  //  }
-  //  cam = new Capture(this, cameras[0]);
-  //  cam.start();
-  //}
-  //game.board = board;
-  //game.turn = Turn.Human.getState();
 }
 
 void draw() {
   background(255);
-  game.renderGame();
+  game.run();
 }
 
-void keyPressed() {
+void mousePressed() {
   if(game.turn == Turn.Human.getState()) {
     game.dropCoin(mouseX / 100, Cell.Red.getState());
+    game.renderGame();
     game.turn = Turn.Bot.getState();
+  }
+  if(!game.gameIsRunning && game.button.isPressed()) {
+    game.clear();
+    game.gameState = Ai.winner(game.board);
+    game.gameIsRunning = true; 
   }
 }
