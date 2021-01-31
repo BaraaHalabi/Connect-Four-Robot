@@ -2,11 +2,8 @@ class Game {
   int board[][] = new int[6][7];
   int coinsInColumns[] = new int[7];
   int x, y, c;
-  int turn = Turn.Bot.getState(), gameState;
+  int turn, gameState, coins;
   boolean gameIsRunning;
-  
-  
-  Button button;
 
   Game() {
     for (int i = 0; i < 6; i ++)
@@ -19,6 +16,8 @@ class Game {
     c = 50;
     gameIsRunning = true;
     gameState = Ai.winner(board);
+    turn = Turn.Bot.getState();
+    coins = 0;
   }
 
   Game(int x, int y, int c) {
@@ -32,15 +31,20 @@ class Game {
     this.c = c;
     gameIsRunning = true;
     gameState = Ai.winner(board);
+    turn = Turn.Bot.getState();
+    coins = 0;
   }
 
   void run() {
     renderGame();
     gameState = Ai.winner(board);
+    if(coins == 42 && gameState == 0) {
+      gameState = 3;
+      gameIsRunning = false;
+    }
     if (gameState != 0)
       gameIsRunning = false;
     aiPlay();
-    renderWinnerScreen(gameState);
   }
 
   void renderGame() {
@@ -68,43 +72,25 @@ class Game {
   }
 
   void aiPlay() {
-    if (turn == Turn.Bot.getState() && gameIsRunning) {
+    if (turn == Turn.Bot.getState() && gameIsRunning)
       game.dropCoin(Ai.decisionMaking(0, true, board, coinsInColumns), Cell.Yellow.getState());
-      turn = Turn.Human.getState();
-    }
-  }
-
-  void renderWinnerScreen(int gameState) {
-    if (!gameIsRunning) {
-      filter(BLUR, 5);
-      fill(255, 128);
-      rect(0, 200, width, 200);
-      fill(0);
-      String label = ((gameState == Cell.Red.getState()) ? "Red" : "Yellow") + " Wins!";
-      textSize(24);
-      textAlign(CORNER);
-      button = new Button(350, 325, 150, 50);
-      if(gameState == Cell.Red.getState())
-        fill(225, 65, 15);
-      else
-        fill(255, 255, 0);
-      text(label, width / 2  - textWidth(label) / 2, 250);
-      button.setButtonColor(color(50, 105, 165));
-      button.setLabelColor(color(255, 255, 255));
-      button.setLabel("Reset", 24);
-      button.render();
-    }
   }
 
   void dropCoin(int column, int coin) {
-    for (int i = 5; i >= 0; i --) {
-      if (board[i][column] == Cell.Empty.getState()) {
-        board[i][column] = coin;
-        break;
+    if (coinsInColumns[column] < 6) {
+      for (int i = 5; i >= 0; i --) {
+        if (board[i][column] == Cell.Empty.getState()) {
+          board[i][column] = coin;
+          break;
+        }
       }
-    }
-    if (coinsInColumns[column] < 6)
+      if(turn == Turn.Human.getState())
+        turn = Turn.Bot.getState();
+      else
+        turn = Turn.Human.getState();
       coinsInColumns[column] ++;
+      coins ++;
+    }
   }
 
   void renderDropArea() {

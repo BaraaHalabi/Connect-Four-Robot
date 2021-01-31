@@ -22,32 +22,9 @@ class Button {
     graphics();
     stylePresets();
     
-    w += 10; h += 10;
     fill(buttonColor, alpha);
-    ellipse(x - (w - h) / 2, y, h, h);
-    ellipse(x + (w - h) / 2, y, h, h);
-    fill(255); //this should follow the background color
-    rect(x - (w - h) / 2.0 + h / 4.0, y, h / 2, h);
-    rect(x + (w - h) / 2.0 - h / 4.0, y, h / 2, h);
-    fill(buttonColor, alpha);
-    rect(x, y, w - h, h);
-    w -= 10; h -= 10;
+    rect(x, y, w, h, 10);
     
-    w += 5; h += 5;
-    fill(255); //this should follow the background color
-    ellipse(x - (w - h) / 2, y, h, h);
-    ellipse(x + (w - h) / 2, y, h, h);
-    rect(x, y, w - h, h);
-    w -= 5; h -= 5;
-    
-    fill(buttonColor, alpha);
-    ellipse(x - (w - h) / 2, y, h, h);
-    ellipse(x + (w - h) / 2, y, h, h);
-    fill(255); //this should follow the background color
-    rect(x - (w - h) / 2.0 + h / 4.0, y, h / 2, h);
-    rect(x + (w - h) / 2.0 - h / 4.0, y, h / 2, h);
-    fill(buttonColor, alpha);
-    rect(x, y, w - h, h);
     fill(labelColor);
     if(label != "")
       text(label, x, y + textDescent());
@@ -94,7 +71,8 @@ class Button {
     ellipseMode(CENTER);
     textAlign(CENTER);
     textSize(fontSize);
-    noStroke();
+    stroke(buttonColor);
+    strokeWeight(2);
   }
   
   boolean isPressed() {
