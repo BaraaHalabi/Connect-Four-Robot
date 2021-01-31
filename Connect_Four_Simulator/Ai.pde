@@ -21,6 +21,40 @@ static class Ai {
     {
       return 0;
     }
+    if (depth == 0)
+    {
+      for (int i=0;i<7;i++)
+      {
+        if (board[0][i] == 0)
+        {
+           board[5 - coinsInColumns[i]][i] = winingValue;
+           if (winner(board) == winingValue)
+           {
+             board[5 - coinsInColumns[i]][i] = 0;
+             return i;
+           }
+           board[5 - coinsInColumns[i]][i] = 0;
+        }
+      }
+      
+      for (int i=0;i<7;i++)
+      {
+        if (board[0][i] == 0 && board[1][i] == 0)
+        {
+           board[5 - coinsInColumns[i]][i] = winingValue;
+           board[5 - (coinsInColumns[i]+1)][i] = loseValue;
+           if (winner(board) == loseValue)
+           {
+             board[5 - coinsInColumns[i]][i] = 0;
+             board[5 - (coinsInColumns[i]+1)][i] = 0;
+             return i;
+           }
+           board[5 - coinsInColumns[i]][i] = 0;
+           board[5 - (coinsInColumns[i]+1)][i] = 0;
+        }
+      }
+      
+    }
     int gameState = winner(board);
     if (gameState == winingValue)
     {
@@ -32,18 +66,19 @@ static class Ai {
       //return -1000000000 / (int)pow(10,depth);
       return -100 / depth;
     }
-    int maxPoint = -1000000, bestCol = 0, totalPoint = 0;
+    int maxPoint = -1000000000, bestCol = 0, totalPoint = 0;
     for (int i = 0; i < 7; i ++)
     {
       if (board[0][i] == 0) 
       {
         int choice =0 ;
-        if (yellowTurn)
+        if (yellowTurn )
         {
            board[5 - coinsInColumns[i]][i] = loseValue;
            if (winner(board) == loseValue)
            {
-             choice+=200;
+             //choice+=999999999;
+             choice+=300;
            }
            board[5 - coinsInColumns[i]][i] = 0;
         }
