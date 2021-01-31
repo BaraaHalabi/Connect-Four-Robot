@@ -16,7 +16,7 @@ static class Ai {
     }
     println();
     }*/
-    if (depth >= 1)
+    if (depth >= 9)
       return 0;
     int gameState = winner(board);
     if (gameState == winingValue) {
