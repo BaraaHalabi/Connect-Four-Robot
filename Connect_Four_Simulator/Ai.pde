@@ -17,6 +17,8 @@ static class Ai {
     }
     println();
     }*/
+    int skip[]={-1,-1,-1,-1,-1,-1,-1};
+    int index=0;
     if (depth >= 9)
     {
       return 0;
@@ -47,13 +49,13 @@ static class Ai {
            {
              board[5 - coinsInColumns[i]][i] = 0;
              board[5 - (coinsInColumns[i]+1)][i] = 0;
-             return i;
+             skip[index] = i;
+             index++;
            }
            board[5 - coinsInColumns[i]][i] = 0;
            board[5 - (coinsInColumns[i]+1)][i] = 0;
         }
       }
-      
     }
     int gameState = winner(board);
     if (gameState == winingValue)
@@ -69,6 +71,18 @@ static class Ai {
     int maxPoint = -1000000000, bestCol = 0, totalPoint = 0;
     for (int i = 0; i < 7; i ++)
     {
+      boolean ok = true;
+      for (int k=0;k<7;k++)
+      {
+         if (i == skip[k])
+         {
+           ok=false;
+         }
+      }
+      if (!ok)
+      {
+        continue;
+      }
       if (board[0][i] == 0) 
       {
         int choice =0 ;
