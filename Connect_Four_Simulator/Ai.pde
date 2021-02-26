@@ -48,7 +48,7 @@ static class Ai {
       }
       
       
-      for (int i=0;i<7;i++)
+      /*for (int i=0;i<7;i++)
       {
         if (board[0][i] == 0 && board[1][i] == 0)
         {
@@ -63,7 +63,7 @@ static class Ai {
            board[5 - coinsInColumns[i]][i] = 0;
            board[5 - (coinsInColumns[i]+1)][i] = 0;
         }
-      }
+      }*/
     }
     int gameState = winner(board);
     if (gameState == winingValue)
@@ -74,7 +74,7 @@ static class Ai {
     else if (gameState == loseValue)
     {
       //return -1000000000 / (int)pow(10,depth);
-      return -100 / depth;
+      return -1000 / depth;
     }
     for (int i = 0; i < 7; i ++)
     {
