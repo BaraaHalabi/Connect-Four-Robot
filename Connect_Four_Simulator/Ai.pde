@@ -8,17 +8,7 @@ static class Ai {
   
   static int decisionMaking(int depth, boolean yellowTurn, int board[][], int coinsInColumns[]) 
   {
-   /* if(depth == 5) {
-    for(int i = 0; i < 6; i ++) {
-      for(int j = 0; j < 7; j ++) {
-        print(board[i][j] + " "); 
-      }
-      println();
-    }
-    println();
-    }*/
-    int skip[]={-1,-1,-1,-1,-1,-1,-1};
-    int index=0;
+    int choices[] = {0,0,0,0,0,0,0};
     if (depth >= 9)
     {
       return 0;
@@ -41,6 +31,25 @@ static class Ai {
       
       for (int i=0;i<7;i++)
       {
+       if (yellowTurn )
+        {
+          if (board[0][i] == 0)
+          {
+           board[5 - coinsInColumns[i]][i] = loseValue;
+           if (winner(board) == loseValue)
+           {
+             board[5 - coinsInColumns[i]][i] = 0;
+             //choice+=999999999;
+             return i;
+           }
+           board[5 - coinsInColumns[i]][i] = 0;
+          }
+        }
+      }
+      
+      
+      for (int i=0;i<7;i++)
+      {
         if (board[0][i] == 0 && board[1][i] == 0)
         {
            board[5 - coinsInColumns[i]][i] = winingValue;
@@ -49,8 +58,7 @@ static class Ai {
            {
              board[5 - coinsInColumns[i]][i] = 0;
              board[5 - (coinsInColumns[i]+1)][i] = 0;
-             skip[index] = i;
-             index++;
+             choices[i] -= 10000;
            }
            board[5 - coinsInColumns[i]][i] = 0;
            board[5 - (coinsInColumns[i]+1)][i] = 0;
@@ -68,10 +76,9 @@ static class Ai {
       //return -1000000000 / (int)pow(10,depth);
       return -100 / depth;
     }
-    int maxPoint = -1000000000, bestCol = 0, totalPoint = 0;
     for (int i = 0; i < 7; i ++)
     {
-      boolean ok = true;
+      /*boolean ok = true;
       for (int k=0;k<7;k++)
       {
          if (i == skip[k])
@@ -82,21 +89,9 @@ static class Ai {
       if (!ok)
       {
         continue;
-      }
+      }  */    
       if (board[0][i] == 0) 
       {
-        int choice =0 ;
-        if (yellowTurn )
-        {
-           board[5 - coinsInColumns[i]][i] = loseValue;
-           if (winner(board) == loseValue)
-           {
-             //choice+=999999999;
-             choice+=300;
-           }
-           board[5 - coinsInColumns[i]][i] = 0;
-        }
-        
         if(yellowTurn)
         {
           board[5 - coinsInColumns[i]][i] = winingValue;
@@ -106,19 +101,28 @@ static class Ai {
           board[5 - coinsInColumns[i]][i] = loseValue;
         }
         coinsInColumns[i]++;
-        choice = decisionMaking(depth + 1, !yellowTurn, board, coinsInColumns);
+        choices[i] += decisionMaking(depth + 1, !yellowTurn, board, coinsInColumns);
         coinsInColumns[i]--;
-        board[5 - coinsInColumns[i]][i] = 0;
-        totalPoint += choice;
-        if (choice >= maxPoint) 
+        board[5 - coinsInColumns[i]][i] = 0;        
+      }
+    }
+    int maxPoint = -1000000000, bestCol = 0, totalPoint = 0;
+    for (int i=0;i<7;i++)
+    {
+      totalPoint += choices[i];
+      if (choices[i] > maxPoint && coinsInColumns[i] <= 5) 
         {
-          maxPoint = choice;
+          maxPoint = choices[i];
           bestCol = i;
         }
-      }
     }
     if (depth == 0)
     {
+      for (int i=0;i<7;i++)
+      {
+        print(choices[i] + " ");
+      }
+      println();
       return bestCol;
     }
     else

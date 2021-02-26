@@ -1,46 +1,40 @@
 //import processing.video.*;
 
-//int[][] board = {{1, 1, 1, 0, 1, 2, 2},
-//                 {1, 1, 1, 2, 1, 2, 2},
-//                 {2, 1, 1, 0, 1, 2, 0},
-//                 {1, 1, 1, 0, 1, 2, 2},
-//                 {1, 2, 1, 1, 0, 1, 2},
-//                 {1, 1, 1, 0, 1, 2, 0}
-//};
+Popup popup = new Popup(200, 200, 300, 200);
 
 Game game = new Game(0, 0, 100);
 
-PShape shape;
+//int boardd[][] = {{0,0,2,1,0,0,2},{0,0,1,1,0,0,1},{0,0,2,2,0,0,2},{0,0,1,1,1,0,2},{0,0,2,1,2,0,2},{0,1,1,2,2,0,1}};
+
 //Capture cam;
 
 void setup() {
   size(700, 600);
-  //String[] cameras = Capture.list();
-
-  //if (cameras.length == 0) {
-  //  println("There are no cameras available for capture.");
-  //  exit();
-  //} else {
-  //  println("Available cameras:");
-  //  for (int i = 0; i < cameras.length; i++) {
-  //    println(cameras[i]);
-  //  }
-  //  cam = new Capture(this, cameras[0]);
-  //  cam.start();
-  //}
-  //game.board = board;
-  //game.turn = Turn.Human.getState();
+  popup.setButton(150, 150, 100, 50, "Restart", color(50, 105, 165), color(255));
+  popup.setPopupColor(color(255));
+  popup.setMessageColor(color(50, 105, 165));
 }
 
 void draw() {
-  background(255);
+  //background(255);
+  game.run();
   game.renderGame();
+  if (game.gameState == 3) {
+    popup.setMessage("Draw");
+    popup.render();
+  } else if (game.gameState != 0) {
+    popup.setMessage(((game.gameState == Cell.Red.getState()) ? "Red" : "Yellow") + " Wins!");
+    popup.render();
+  }
 }
 
-void keyPressed() {
-  if(game.turn == Turn.Human.getState()) {
+void mousePressed() {
+  if (popup.button.isPressed() && !game.gameIsRunning) {
+    game = new Game(0, 0, 100);
+  }
+  if (game.turn == Turn.Human.getState() && game.gameIsRunning) {
     game.dropCoin(mouseX / 100, Cell.Red.getState());
     game.renderGame();
-    game.turn = Turn.Bot.getState();
   }
+  game.renderGame();
 }
