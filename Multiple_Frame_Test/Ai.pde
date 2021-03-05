@@ -1,5 +1,5 @@
 static int counter = 0;
-final static int intel = 2;
+final static int intel = 9;
 
 static class Ai {
   static int winingValue = Cell.Yellow.getState();

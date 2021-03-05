@@ -7,12 +7,16 @@ Game game;
 
 ColorCell[][] boardCells = new ColorCell[6][7];
 ColorCell[] railCells = new ColorCell[7];
+int[] whereToCheck = new int[7];
+
 PrintWriter writer;
 Capture cam;
+Serial port;
 
 void settings() {
   size(640, 480);
   simApp = new SimApp();
+  port = new Serial(this, "COM4", 9600);
 }
 
 void setup() {
@@ -36,7 +40,7 @@ void setup() {
     for (int i = 0; i < cameras.length; i++) {
       println(cameras[i]);
     }
-    cam = new Capture(this, cameras[1]);
+    cam = new Capture(this, cameras[0]);
     cam.start();
   }
   delay(3000);
@@ -50,7 +54,7 @@ void setup() {
 }
 
 void draw() {
-  background(55);
+  frameRate(20);
   if (cam.available())
     cam.read();
   image(cam, 0, 0);
@@ -61,15 +65,6 @@ void draw() {
   }
   for(int i = 0; i < 7; i ++) {
     railCells[i].render(); 
-  }
-  
-  int target = 7;
-  
-  if(200 - railCells[target - 1].getGrayValue() > 100) {
-    //do something
-    //port.write('d');
-    //noLoop();
-    //exit();
   }
   editData();
 }
@@ -97,7 +92,8 @@ void mousePressed() {
       railCells[i].highlight = true;
     }
   }
-  //println(mouseX, mouseY);
+  //color c = get(mouseX, mouseY);
+  //println((red(c) + green(c) + blue(c)) / 3);
 }
 
 void keyPressed() {

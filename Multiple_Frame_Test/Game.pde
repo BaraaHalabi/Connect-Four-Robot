@@ -3,9 +3,10 @@ class Game {
   int coinsInColumns[] = new int[7];
   int x, y, c;
   int turn, gameState, coins;
+  PApplet applet;
   boolean gameIsRunning;
 
-  Game() {
+  Game(PApplet applet) {
     for (int i = 0; i < 6; i ++)
       for (int j = 0; j < 7; j ++)
         board[i][j] = 0;
@@ -14,13 +15,14 @@ class Game {
     x = 0;
     y = 0;
     c = 50;
+    this.applet = applet;
     gameIsRunning = true;
     gameState = Ai.winner(board);
     turn = Turn.Bot.getState();
     coins = 0;
   }
 
-  Game(int x, int y, int c) {
+  Game(int x, int y, int c, PApplet applet) {
     for (int i = 0; i < 6; i ++)
       for (int j = 0; j < 7; j ++)
         board[i][j] = 0;
@@ -30,13 +32,14 @@ class Game {
     this.y = y;
     this.c = c;
     gameIsRunning = true;
+    this.applet = applet;
     gameState = Ai.winner(board);
     turn = Turn.Bot.getState();
     coins = 0;
   }
 
-  void run(PApplet applet) {
-    renderGame(applet);
+  void run() {
+    renderGame();
     gameState = Ai.winner(board);
     if(coins == 42 && gameState == 0) {
       gameState = 3;
@@ -44,10 +47,9 @@ class Game {
     }
     if (gameState != 0)
       gameIsRunning = false;
-    aiPlay();
   }
 
-  void renderGame(PApplet applet) {
+  void renderGame() {
     applet.noStroke();
     applet.rectMode(CORNER);
     applet.ellipseMode(CORNER);
@@ -68,12 +70,16 @@ class Game {
       }
       py += c;
     }
-    renderDropArea(applet);
+    //renderDropArea();
   }
 
-  void aiPlay() {
-    if (turn == Turn.Bot.getState() && gameIsRunning)
-      game.dropCoin(Ai.decisionMaking(0, true, board, coinsInColumns), Cell.Yellow.getState());
+  int aiPlay() {
+    if (turn == Turn.Bot.getState() && gameIsRunning) {
+      int dicision = Ai.decisionMaking(0, true, board, coinsInColumns);
+      game.dropCoin(dicision, Cell.Yellow.getState());
+      return dicision;
+    }
+    return -1;
   }
 
   void dropCoin(int column, int coin) {
@@ -93,7 +99,7 @@ class Game {
     }
   }
 
-  void renderDropArea(PApplet applet) {
+  void renderDropArea() {
     if (turn == Turn.Human.getState() && gameIsRunning) {
       applet.fill(255, 255, 255, 100);
       applet.rect((applet.mouseX / c) * c, 0, c, 6 * c);
