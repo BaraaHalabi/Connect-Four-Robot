@@ -57,7 +57,7 @@ class motor {
 
 motor dropper(2, 3), rail(4, 5);
 
-bool state = false;
+bool backlightState = false, camlightState = false;
 
 void setup() {
   pinMode(backlight, OUTPUT);
@@ -69,29 +69,34 @@ void setup() {
 void loop() {
   if(Serial.available()) {
     char in = Serial.read();
-    if(in == '1') {
-      drop(dropper, 250);
-    } else if(in == '2') {
-      state = !state;
-    } else if(in == 'l') {
+    if(in == 'b') {
+      backlightState = !backlightState;
+    } else if(in == 'c') {
+      camlightState = !camlightState;
+    } else if(in == 's') {
       rail.rotate(false);
-    } else if(in == 'r') {
-      rail.rotate(true);
     } else if(in == 's') {
       rail.stop();
     } else if(in == 'd') {
       rail.stop();
       drop(dropper, 250);
-      rail.rotate(false, 500);
-      delay(500);
+      rail.rotate(500, false);
+      delay(200);
       rail.rotate(true);
+      while(digitalRead(ls) == HIGH) {
+        rail.rotate(true);
+      }
+      rail.stop();
+      Serial.print('e');
+      //backlightState = !backlightState;
+      camlightState = !camlightState;
+    } else if(in == 't') {
+      drop(dropper, 250);
     }
   }
-  digitalWrite(camlight, state);
   delay(1000);
-  if(digitalRead(ls) == LOW) {
-    rail.rotate(false);
-  }
+  digitalWrite(camlight, camlightState);
+  digitalWrite(backlight, backlightState);
 }
 
 void drop(motor m, int del) {
